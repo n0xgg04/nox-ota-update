@@ -73,7 +73,7 @@ const submit = async (code: string) => {
   const data = await getCodePtitCookie(parsed.username, parsed.password);
     if (data.cookie) {
         const file = fs.readdirSync(dir)
-        const existed = file.find((f) => f.startsWith("main"))
+        const existed = file.find((f) => f.toLowerCase().startsWith("main"))
         if (existed) {
             const code = fs.readFileSync(existed, {
                 encoding: "ascii"
