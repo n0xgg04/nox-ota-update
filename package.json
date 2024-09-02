@@ -4,16 +4,20 @@
   "description": "",
   "main": "./bin/cli.js",
   "bin": {
-    "cptit-submit": "./bin/cli.js"
+    "cptit-submit": "bin/cli.js"
   },
   "files": [
     "bin"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n0xgg04/CPTIT-Submit.git"
+  },
   "scripts": {
     "build": "rollup -c",
     "watch": "rollup -c --watch"
   },
-  "author": "",
+  "author": "n0xgg04",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.22.8",
