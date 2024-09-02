@@ -1,0 +1,49 @@
+{
+  "name": "@n0xgg04/cptit-submit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./bin/cli.js",
+  "bin": {
+    "cptit-submit": "./bin/cli.js"
+  },
+  "files": [
+    "bin"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -c --watch"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.22.8",
+    "@babel/eslint-parser": "^7.22.7",
+    "@babel/preset-env": "^7.22.7",
+    "@babel/preset-typescript": "^7.22.5",
+    "@rollup/plugin-babel": "^5.3.1",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@types/inquirer": "^8.2.6",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
+    "eslint": "^8.44.0",
+    "eslint-config-alloy": "^4.9.0",
+    "eslint-config-prettier": "^8.8.0",
+    "prettier": "^2.8.8",
+    "rollup": "^2.79.1",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@inquirer/select": "^2.4.7",
+    "@types/figlet": "^1.5.8",
+    "axios": "^1.7.5",
+    "chalk": "^4.1.2",
+    "cheerio": "^1.0.0",
+    "cli-loading-animation": "^1.0.6",
+    "cli-table3": "^0.6.5",
+    "commander": "^11.0.0",
+    "dotenv": "^16.4.5",
+    "figlet": "^1.7.0",
+    "inquirer": "^8.2.5"
+  }
+}
