@@ -89,12 +89,13 @@ const submit = async (code: string) => {
         const file = fs.readdirSync(dir)
       const existed = file.find((f) => f.toLowerCase().startsWith("main"))
     
-        if (existed) {
-            const code = fs.readFileSync(existed, {
+      if (existed) {
+          const source = fs.readFileSync(existed, {
                 encoding: "ascii"
-            }).split("\n")[0].replace(/[^a-zA-Z0-9]/g, '');
+            })
+            const code = source.split("\n")[0].replace(/[^a-zA-Z0-9]/g, '');
           if (parsed.save) {
-            fs.writeFileSync(process.cwd()+"/code/"+code+path.extname(existed), code)
+            fs.writeFileSync(process.cwd()+"/code/"+code+path.extname(existed), source)
           }
             try {
               const csrf = await getCodePtitCsrf(code, data.cookie)
