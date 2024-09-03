@@ -1,6 +1,6 @@
 {
   "name": "cptit-submit",
-  "version": "1.0.3",
+  "version": "1.0.6",
   "description": "",
   "main": "./bin/cli.js",
   "bin": {
@@ -38,6 +38,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
+    "@inquirer/confirm": "^3.2.0",
     "@inquirer/select": "^2.4.7",
     "@types/figlet": "^1.5.8",
     "axios": "^1.7.5",

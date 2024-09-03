@@ -11,6 +11,7 @@ import figlet from "figlet"
 import { loading } from 'cli-loading-animation';
 import axios from 'axios';
 import Table from "cli-table3"
+import confirm from '@inquirer/confirm';
 
 
 program.version('1.0.0').description('CODEPTIT SUBMITTER - CLI by @n0xgg04')
@@ -63,27 +64,42 @@ const submit = async (code: string) => {
     writeCredential({
         username: answers.name,
         password: answers.password,
-      })
+    })
+
   }
  
   const parsed = readCredential()
     
   console.log(chalk.green(`Login to ${parsed.username}...!`));
 
+  if (!Object.keys(parsed).includes("save")) {
+      const answer = await confirm({ message: 'Do you want to auto save your source code after submit?' });
+  
+    const read = readCredential();
+    if (answer) {
+      read['save'] = true;
+      if(!fs.existsSync(process.cwd()+"/code")) fs.mkdirSync(process.cwd()+"/code")
+      writeCredential(read);
+    }
+  }
+  
   
   const data = await getCodePtitCookie(parsed.username, parsed.password);
     if (data.cookie) {
         const file = fs.readdirSync(dir)
-        const existed = file.find((f) => f.toLowerCase().startsWith("main"))
+      const existed = file.find((f) => f.toLowerCase().startsWith("main"))
+    
         if (existed) {
             const code = fs.readFileSync(existed, {
                 encoding: "ascii"
             }).split("\n")[0].replace(/[^a-zA-Z0-9]/g, '');
+          if (parsed.save) {
+            fs.writeFileSync(process.cwd()+"/code/"+code+path.extname(existed), code)
+          }
             try {
               const csrf = await getCodePtitCsrf(code, data.cookie)
           const { start, stop } = loading(`Submiting ${code}...`);
            start()
-              
                 try {
                   const [result, problem] = await submitCode(code, data.cookie, existed, path.extname(existed) as any, csrf)
                    stop()
