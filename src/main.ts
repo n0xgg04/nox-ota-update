@@ -22,6 +22,7 @@ program.parse(process.argv);
 const options = program.opts();
 
 program.action(async () => {
+  console.clear();
   console.log(figlet.textSync("CODEPTIT SUBMIT"));
   if (options.c) {
     const account = readCredential()
