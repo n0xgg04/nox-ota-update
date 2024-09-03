@@ -95,7 +95,7 @@ const submit = async (code: string) => {
             })
             const code = source.split("\n")[0].replace(/[^a-zA-Z0-9]/g, '');
           if (parsed.save) {
-            fs.writeFileSync(process.cwd()+"/code/"+code+path.extname(existed), source)
+            fs.writeFileSync(process.cwd()+"/code/"+code+path.extname(existed), source.replace("class Main",`class ${code}`))
           }
             try {
               const csrf = await getCodePtitCsrf(code, data.cookie)
