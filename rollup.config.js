@@ -2,6 +2,7 @@ import { babel } from '@rollup/plugin-babel';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
 import fs from 'fs';
+import commonjs from "@rollup/plugin-commonjs";
 
 const pkg = JSON.parse(fs.readFileSync('./package.json'));
 const external = Object.keys(pkg.dependencies || {}).concat(['fs/promises']);
@@ -27,5 +28,6 @@ export default {
       babelHelpers: 'bundled',
       extensions,
     }),
+    commonjs(),
   ],
 };

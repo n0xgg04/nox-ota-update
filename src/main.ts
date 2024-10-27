@@ -5,23 +5,51 @@ import * as path from "node:path";
 import ExpoConfig from "@expo/config";
 import AdmZip from 'adm-zip'
 import axios from "axios";
-import {CONSTANTS} from "./config";
 import FormData from "form-data";
-import ora from 'ora';
+import { createSpinner } from 'nanospinner'
+
+export interface UploadResponse {
+  result: string
+  data: Data
+}
+
+export interface Data {
+  id: string
+}
 
 
 program
   .version('1.0.0')
   .description('NOX OTA UPDATER')
-  .requiredOption('-p, --projectId <type>', 'Project ID')
-  .requiredOption('-b, --branch <type>', 'Update branch')
-  .requiredOption('-o, --os <type>', 'Platform')
-  .requiredOption('-v, --runtimeVersion <type>', 'Run time version')
+  .option('-p, --projectId <type>', 'Project ID')
+  .option('-o, --os <type>', 'Platform')
+  .option('-v, --runtimeVersion <type>', 'Run time version')
+  .option('-b, --build', 'Build mode')
   .action(async (options) => {
+
+    const configPath = path.resolve(process.cwd(),".nox.config.json")
+    if(!fs.existsSync(configPath)){
+      console.error("Config path not found")
+      return
+    }
+
+    const config = JSON.parse(fs.readFileSync(configPath, {encoding:'utf8'}));
+
+
+    if(options.build){
+      const appPath = path.resolve(process.cwd(),"app.json")
+      let appConfig = JSON.parse(fs.readFileSync(appPath,{encoding:'utf-8'}))
+      appConfig.expo.updates = `${config.updateHostUrl}/updates/${config.projectId}/${config.branch.build}`
+      fs.writeFileSync(appPath, JSON.stringify(appConfig, null, 2))
+      console.log("Edited app.json for Nox OTA Update")
+      return;
+    }
+
+
     console.log(`Project ID: ${options.projectId}`);
-    console.log(`Branch: ${options.branch}`);
+    console.log(`Branch: ${config.branch.update}`);
     console.log(`OS: ${options.os}`);
-    console.log(`Runtime Version: ${options.runtimeVersion}`);
+
     try {
       execSync(`npx expo export --platform=${options.os}`, {stdio: 'inherit'});
       const distDir = path.resolve(process.cwd(), 'dist');
@@ -34,25 +62,31 @@ program
           encoding: "utf8",
         })
 
+        const runTime = exp.runtimeVersion ?? options.runtimeVersion;
+        if(!runTime){
+          console.error("Runtime version not found")
+          return;
+        }
+        console.log(`Runtime Version: ${runTime}`);
         const zip = new AdmZip();
-        const archiveLoading = ora('Archiving file...').start();
+        const archiveLoading = createSpinner('Archiving file...').start();
         zip.addLocalFolder(distDir)
         const zipDir = path.resolve(distDir, "update.zip");
         zip.writeZip(zipDir);
-        archiveLoading.succeed(`Saved update to ${zipDir}`)
+        archiveLoading.success({text: `Saved update to ${zipDir}`})
 
-        const uploadLoading = ora('Uploading to Nox OTA Server...').start();
+        const uploadLoading = createSpinner('Uploading to Nox OTA Server...').start();
         const form = new FormData();
         form.append('file', fs.createReadStream(zipDir));
         try {
-          await axios.post(`${CONSTANTS.updateEndpoint}/${options.projectId}?platform=${options.os}&runtime-version=${options.runtimeVersion}&branch=${options.branch}`, form, {
+          const response = await axios.post<UploadResponse>(`${config.updateHostUrl}/update/${config.projectId}?platform=${options.os}&runtime-version=${runTime}&branch=${config.branch.update}`, form, {
             headers: {
               ...form.getHeaders(),
             },
           })
-          uploadLoading.succeed("Uploaded to Nox OTA Server. Your update will available after 1-5 minutes");
+          uploadLoading.success({text: `Uploaded to Nox OTA Server (ID: ${response.data.data.id} - Branch: ${config.branch.update}). Your update will available after 1-5 minutes`});
         } catch (err) {
-          uploadLoading.fail("Upload failed");
+          uploadLoading.error({text: "Upload failed"});
         }
       } else {
         console.error("Invalid export folder.");
