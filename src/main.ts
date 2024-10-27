@@ -38,7 +38,11 @@ program
     if(options.build){
       const appPath = path.resolve(process.cwd(),"app.json")
       let appConfig = JSON.parse(fs.readFileSync(appPath,{encoding:'utf-8'}))
-      appConfig.expo.updates = `${config.updateHostUrl}/updates/${config.projectId}/${config.branch.build}`
+      appConfig.expo.updates = {
+        "url": `${config.updateHostUrl}/updates/${config.projectId}/${config.branch.build}`,
+        ...config.config
+      }
+
       fs.writeFileSync(appPath, JSON.stringify(appConfig, null, 2))
       console.log("Edited app.json for Nox OTA Update")
       return;
