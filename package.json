@@ -1,6 +1,6 @@
 {
   "name": "nox-update",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "",
   "main": "./bin/cli.js",
   "bin": {

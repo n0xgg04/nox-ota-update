@@ -21,7 +21,6 @@ export interface Data {
 program
   .version('1.0.0')
   .description('NOX OTA UPDATER')
-  .option('-p, --projectId <type>', 'Project ID')
   .option('-o, --os <type>', 'Platform')
   .option('-v, --runtimeVersion <type>', 'Run time version')
   .option('-b, --build', 'Build mode')
@@ -45,13 +44,22 @@ program
       return;
     }
 
+    const projectId = config.projectId;
+    const os = options.os ?? "android"
+    const branch = config.branch.update
 
-    console.log(`Project ID: ${options.projectId}`);
-    console.log(`Branch: ${config.branch.update}`);
-    console.log(`OS: ${options.os}`);
+    if(!projectId || !os || !branch){
+      console.error("No valid config provided")
+      return;
+    }
+
+
+    console.log(`Project ID: ${projectId}`);
+    console.log(`Branch: ${branch}`);
+    console.log(`OS: ${os}`);
 
     try {
-      execSync(`npx expo export --platform=${options.os}`, {stdio: 'inherit'});
+      execSync(`npx expo export --platform=${os}`, {stdio: 'inherit'});
       const distDir = path.resolve(process.cwd(), 'dist');
       if (fs.existsSync(distDir)) {
         const {exp} = ExpoConfig.getConfig(process.cwd(), {
@@ -79,7 +87,7 @@ program
         const form = new FormData();
         form.append('file', fs.createReadStream(zipDir));
         try {
-          const response = await axios.post<UploadResponse>(`${config.updateHostUrl}/update/${config.projectId}?platform=${options.os}&runtime-version=${runTime}&branch=${config.branch.update}`, form, {
+          const response = await axios.post<UploadResponse>(`${config.updateHostUrl}/update/${projectId}?platform=${os}&runtime-version=${runTime}&branch=${branch}`, form, {
             headers: {
               ...form.getHeaders(),
             },
